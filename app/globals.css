@@ -70,8 +70,12 @@ h1 {
   margin-top: 24px;
   background: white;
   border-radius: 18px;
-  padding: 20px;
+  padding: 24px;
   text-align: left;
+}
+.card button {
+  display: block;
+  margin: 16px auto 0;
 }
 
 /* inputs */
@@ -88,4 +92,7 @@ textarea {
 /* form tags alignment */
 .card .row {
   justify-content: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+  margin-bottom: 16px;
 }
