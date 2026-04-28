@@ -11,7 +11,7 @@ type Meal = {
 };
 
 const TAGS = ["Winter", "Summer", "Quick", "Healthy", "Comfort"];
-const VIBES = ["🤗 Cosy", "🥗 Fresh", "🤤 Indulgent"];
+const VIBES = ["🤗 Cosy", "🥗 Fresh", "😈 Naughty"];
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
@@ -82,6 +82,13 @@ export default function Home() {
     <main className="container">
       <h1>🍽️ What's for dinner?</h1>
 
+      {/* Empty state */}
+      {!selectedMeal && (
+        <p style={{ color: "#6b7280", marginBottom: "10px" }}>
+          Pick a vibe and we’ll decide for you
+        </p>
+      )}
+
       {/* Vibes */}
       <div className="row">
         {VIBES.map((v) => (
@@ -108,8 +115,15 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Buttons stacked */}
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {/* Buttons */}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "6px",
+        }}
+      >
         <button className="cta" onClick={suggestMeal}>
           Suggest meal
         </button>
@@ -122,14 +136,17 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Result */}
+      {/* Result with animation */}
       {selectedMeal && (
-        <div className="card">
-          <h2>{selectedMeal.name}</h2>
-          <p>{selectedMeal.ingredients}</p>
-          <button className="cta secondary" onClick={copyIngredients}>
-            Copy ingredients
-          </button>
+        <div style={{ animation: "fadeIn 0.3s ease" }}>
+          <div className="card">
+            <h2>{selectedMeal.name}</h2>
+            <p>{selectedMeal.ingredients}</p>
+
+            <button className="cta secondary" onClick={copyIngredients}>
+              Copy ingredients
+            </button>
+          </div>
         </div>
       )}
 

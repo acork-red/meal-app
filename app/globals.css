@@ -9,13 +9,14 @@ body {
 .container {
   max-width: 420px;
   margin: 0 auto;
-  padding: 60px 20px;
+  padding: 72px 20px;
   text-align: center;
 }
 
 h1 {
-  font-size: 32px;
-  margin-bottom: 28px;
+  font-size: 34px;
+  margin-bottom: 32px;
+  letter-spacing: -0.5px;
 }
 
 /* rows */
@@ -23,8 +24,8 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 /* pills */
@@ -35,23 +36,41 @@ h1 {
   background: white;
   cursor: pointer;
   font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+.pill:hover {
+  transform: translateY(-1px);
+  border-color: #d1d5db;
 }
 
 .pill.active {
-  background: black;
+  background: #111827;
   color: white;
+  border-color: #111827;
 }
 
-/* main CTA */
+/* primary CTA */
 .cta {
   margin-top: 20px;
   background: linear-gradient(to right, #f97316, #ea580c);
   color: white;
-  padding: 16px 26px;
+  padding: 16px 28px;
   border: none;
   border-radius: 18px;
   font-size: 16px;
   cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25);
+}
+
+.cta:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(234, 88, 12, 0.3);
+}
+
+.cta:active {
+  transform: scale(0.98);
 }
 
 /* secondary CTA */
@@ -63,19 +82,21 @@ h1 {
   background: white;
   color: #ea580c;
   border: 1px solid #fdba74;
+  box-shadow: none;
+}
+
+.cta.secondary:hover {
+  background: #fff7ed;
 }
 
 /* card */
 .card {
-  margin-top: 24px;
+  margin-top: 28px;
   background: white;
   border-radius: 20px;
-  padding: 28px; /* 🔥 more breathing room */
+  padding: 28px;
   text-align: left;
-}
-.card button {
-  display: block;
-  margin: 16px auto 0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
 }
 
 /* inputs */
@@ -83,24 +104,52 @@ input,
 textarea {
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   padding: 12px 14px;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   font-size: 14px;
+  transition: all 0.15s ease;
+  background: #fafafa;
 }
 
-/* form tags alignment */
+/* 🔥 premium feel */
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #f97316;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+}
+
+/* textarea spacing */
+textarea {
+  margin-bottom: 18px;
+}
+
+/* form tags */
 .card .row {
   justify-content: flex-start;
-  gap: 12px;
-  margin-top: 8px;
-  margin-bottom: 16px;
-}
-.card input:first-child {
-  margin-top: 4px;
+  margin-bottom: 20px;
 }
 
-.card textarea {
+/* meal result */
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.card p {
   margin-bottom: 16px;
+  color: #4b5563;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
