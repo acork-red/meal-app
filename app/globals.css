@@ -42,7 +42,7 @@ h1 {
   color: white;
 }
 
-/* main button */
+/* main CTA */
 .cta {
   margin-top: 20px;
   background: linear-gradient(to right, #f97316, #ea580c);
@@ -54,12 +54,15 @@ h1 {
   cursor: pointer;
 }
 
-/* smaller button */
+/* secondary CTA */
 .cta.secondary {
   margin-top: 12px;
   padding: 10px 16px;
   font-size: 14px;
   border-radius: 14px;
+  background: white;
+  color: #ea580c;
+  border: 1px solid #fdba74;
 }
 
 /* card */
@@ -82,7 +85,7 @@ textarea {
   font-size: 14px;
 }
 
-/* left align tags inside form */
+/* form tags alignment */
 .card .row {
   justify-content: flex-start;
 }

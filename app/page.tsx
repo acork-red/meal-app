@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <main className="container">
-      <h1>🍽️ What should we eat?</h1>
+      <h1>🍽️ What's for dinner?</h1>
 
       {/* Vibes */}
       <div className="row">
@@ -108,18 +108,19 @@ export default function Home() {
         ))}
       </div>
 
-      {/* Main CTA */}
-      <button className="cta" onClick={suggestMeal}>
-        Suggest meal
-      </button>
+      {/* Buttons stacked */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <button className="cta" onClick={suggestMeal}>
+          Suggest meal
+        </button>
 
-      {/* Secondary CTA */}
-      <button
-        className="cta secondary"
-        onClick={() => setShowManager(!showManager)}
-      >
-        Add / Edit meals
-      </button>
+        <button
+          className="cta secondary"
+          onClick={() => setShowManager(!showManager)}
+        >
+          Add / Edit meals
+        </button>
+      </div>
 
       {/* Result */}
       {selectedMeal && (
