@@ -69,8 +69,8 @@ h1 {
 .card {
   margin-top: 24px;
   background: white;
-  border-radius: 18px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 28px; /* 🔥 more breathing room */
   text-align: left;
 }
 .card button {
@@ -82,9 +82,10 @@ h1 {
 input,
 textarea {
   width: 100%;
+  box-sizing: border-box;
   margin-bottom: 12px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
   font-size: 14px;
 }
@@ -94,5 +95,12 @@ textarea {
   justify-content: flex-start;
   gap: 12px;
   margin-top: 8px;
+  margin-bottom: 16px;
+}
+.card input:first-child {
+  margin-top: 4px;
+}
+
+.card textarea {
   margin-bottom: 16px;
 }
