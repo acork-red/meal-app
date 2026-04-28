@@ -11,150 +11,167 @@ type Meal = {
 };
 
 const TAGS = ["Winter", "Summer", "Quick", "Healthy", "Comfort"];
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const VIBES = ["🤗 Cosy", "🥗 Fresh", "🤤 Indulgent"];
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
-  const [current, setCurrent] = useState<Meal | null>(null);
-  const [next, setNext] = useState<Meal | null>(null);
-  const [weekPlan, setWeekPlan] = useState<Record<string, Meal | null>>({});
+  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+  const [filters, setFilters] = useState<string[]>([]);
+  const [vibe, setVibe] = useState<string | null>(null);
+
+  const [showExtras, setShowExtras] = useState(false);
+  const [activeExtra, setActiveExtra] = useState<"swipe" | "plan" | "ai" | null>(null);
+
   const [ingredients, setIngredients] = useState("");
-  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
+  const [aiResult, setAiResult] = useState("");
 
   useEffect(() => {
     fetchMeals();
-    initWeek();
   }, []);
 
   async function fetchMeals() {
     const { data } = await supabase.from("meals").select("*");
-    if (data) {
-      setMeals(data);
-      pickTwo(data);
+    if (data) setMeals(data);
+  }
+
+  function toggleFilter(tag: string) {
+    setFilters((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }
+
+  function suggestMeal() {
+    let pool = meals;
+
+    if (filters.length) {
+      pool = pool.filter((m) =>
+        filters.every((f) => m.tags?.includes(f))
+      );
     }
+
+    if (!pool.length) pool = meals;
+
+    const choice = pool[Math.floor(Math.random() * pool.length)];
+    setSelectedMeal(choice);
   }
 
-  function initWeek() {
-    const obj: Record<string, Meal | null> = {};
-    DAYS.forEach((d) => (obj[d] = null));
-    setWeekPlan(obj);
-  }
-
-  function pickTwo(list: Meal[]) {
-    if (list.length < 2) return;
-    const shuffled = [...list].sort(() => 0.5 - Math.random());
-    setCurrent(shuffled[0]);
-    setNext(shuffled[1]);
-  }
-
-  function swipe(choice: "left" | "right") {
-    const picked = choice === "right" ? current : next;
-    setCurrent(picked || null);
-    pickTwo(meals);
-  }
-
-  function assignToDay(day: string) {
-    if (!current) return;
-    setWeekPlan((prev) => ({ ...prev, [day]: current }));
-  }
-
-  function generateShoppingList() {
-    const items = Object.values(weekPlan)
-      .filter(Boolean)
-      .flatMap((m) => m!.ingredients.split(","))
-      .map((i) => i.trim());
-
-    return [...new Set(items)];
-  }
-
-  async function getAISuggestion() {
+  async function getAI() {
     const res = await fetch("/api/ai", {
       method: "POST",
       body: JSON.stringify({ ingredients }),
     });
     const data = await res.json();
-    setAiSuggestion(data.result);
+    setAiResult(data.result);
   }
 
   return (
     <main className="container">
       <h1>🍽️ What's for dinner?</h1>
 
-      {/* SWIPE UI */}
-      {current && next && (
-        <div className="card">
-          <h3>Choose a meal</h3>
-
-          <div style={{ display: "flex", gap: 12 }}>
-            <div className="pill" style={{ flex: 1 }}>
-              {current.name}
-            </div>
-            <div className="pill" style={{ flex: 1 }}>
-              {next.name}
-            </div>
-          </div>
-
-          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-            <button className="cta secondary" onClick={() => swipe("left")}>
-              ← Skip
-            </button>
-            <button className="cta" onClick={() => swipe("right")}>
-              Pick →
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* WEEK PLANNER */}
-      <div className="card">
-        <h3>Plan your week</h3>
-
-        {DAYS.map((day) => (
-          <div
-            key={day}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: 8,
-            }}
+      {/* Vibes */}
+      <div className="row">
+        {VIBES.map((v) => (
+          <button
+            key={v}
+            className={vibe === v ? "pill active" : "pill"}
+            onClick={() => setVibe(v)}
           >
-            <span>{day}</span>
-            <button
-              className="cta secondary"
-              onClick={() => assignToDay(day)}
-            >
-              {weekPlan[day]?.name || "Assign"}
-            </button>
-          </div>
+            {v}
+          </button>
         ))}
       </div>
 
-      {/* SHOPPING LIST */}
-      <div className="card">
-        <h3>Shopping list</h3>
-        <ul>
-          {generateShoppingList().map((item, i) => (
-            <li key={i}>{item}</li>
-          ))}
-        </ul>
+      {/* Tags */}
+      <div className="row">
+        {TAGS.map((tag) => (
+          <button
+            key={tag}
+            className={filters.includes(tag) ? "pill active" : "pill"}
+            onClick={() => toggleFilter(tag)}
+          >
+            {tag}
+          </button>
+        ))}
       </div>
 
-      {/* AI SUGGESTION */}
-      <div className="card">
-        <h3>AI meal suggestion</h3>
+      {/* MAIN CTA */}
+      <button className="cta" onClick={suggestMeal}>
+        Suggest meal
+      </button>
 
-        <textarea
-          placeholder="Enter ingredients..."
-          value={ingredients}
-          onChange={(e) => setIngredients(e.target.value)}
-        />
+      {/* RESULT */}
+      {selectedMeal && (
+        <div className="card">
+          <h2>{selectedMeal.name}</h2>
+          <p>{selectedMeal.ingredients}</p>
 
-        <button className="cta" onClick={getAISuggestion}>
-          Generate meal
-        </button>
+          <button className="cta secondary" onClick={suggestMeal}>
+            Try again
+          </button>
+        </div>
+      )}
 
-        {aiSuggestion && <p>{aiSuggestion}</p>}
-      </div>
+      {/* MORE BUTTON */}
+      <button
+        className="cta secondary"
+        style={{ marginTop: 20 }}
+        onClick={() => setShowExtras(true)}
+      >
+        More options
+      </button>
+
+      {/* DRAWER */}
+      {showExtras && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            background: "white",
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+            padding: 20,
+            boxShadow: "0 -10px 30px rgba(0,0,0,0.1)",
+          }}
+        >
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            <button onClick={() => setActiveExtra("swipe")}>Swipe</button>
+            <button onClick={() => setActiveExtra("plan")}>Plan</button>
+            <button onClick={() => setActiveExtra("ai")}>AI</button>
+            <button onClick={() => setShowExtras(false)}>Close</button>
+          </div>
+
+          {/* SWIPE */}
+          {activeExtra === "swipe" && (
+            <div>
+              <p>Swipe-style chooser coming next (we’ll upgrade this)</p>
+            </div>
+          )}
+
+          {/* PLAN */}
+          {activeExtra === "plan" && (
+            <div>
+              <p>Weekly planner coming next</p>
+            </div>
+          )}
+
+          {/* AI */}
+          {activeExtra === "ai" && (
+            <div>
+              <textarea
+                placeholder="Enter ingredients..."
+                value={ingredients}
+                onChange={(e) => setIngredients(e.target.value)}
+              />
+              <button className="cta" onClick={getAI}>
+                Generate
+              </button>
+              {aiResult && <p>{aiResult}</p>}
+            </div>
+          )}
+        </div>
+      )}
     </main>
   );
 }
