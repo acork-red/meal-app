@@ -8,6 +8,8 @@ body {
 .container {
   text-align: center;
   padding: 60px 20px 40px;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 h1 {
@@ -45,6 +47,7 @@ h1 {
 }
 
 .cta {
+  display: inline-block;
   background: linear-gradient(to right, #f97316, #ea580c);
   color: white;
   padding: 18px 28px;
@@ -68,12 +71,10 @@ h1 {
 
 .card {
   background: white;
-  padding: 24px 28px;
+  padding: 28px;
   border-radius: 20px;
   margin-top: 24px;
-  max-width: 420px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
   box-shadow: 0 10px 30px rgba(0,0,0,0.08);
   text-align: left;
 }
@@ -81,17 +82,16 @@ h1 {
 input, textarea {
   width: 100%;
   margin-bottom: 12px;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .link {
-  background: none;
-  border: none;
+  display: inline-block;
+  margin-top: 16px;
   color: #555;
   text-decoration: underline;
   cursor: pointer;
-  margin-top: 16px;
-  display: block;
 }

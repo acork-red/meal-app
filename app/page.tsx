@@ -110,9 +110,11 @@ export default function Home() {
         Suggest meal
       </button>
 
-      <button className="link" onClick={() => setShowManager(!showManager)}>
-        Add / Edit meals
-      </button>
+ <div style={{ textAlign: "center" }}>
+  <button className="link" onClick={() => setShowManager(!showManager)}>
+    Add / Edit meals
+  </button>
+</div>
 
       {selectedMeal && (
         <div className="card">
