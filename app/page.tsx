@@ -8,10 +8,9 @@ type Meal = {
   name: string;
   ingredients: string;
   tags: string[];
-  last_eaten?: string | null;
 };
 
-const TAGS = ["winter", "summer", "quick", "healthy", "comfort"];
+const TAGS = ["Winter", "Summer", "Quick", "Healthy", "Comfort"];
 const VIBES = ["🤗 Cosy", "🥗 Fresh", "🤤 Indulgent"];
 
 export default function Home() {
@@ -64,11 +63,6 @@ export default function Home() {
 
     const choice = pool[Math.floor(Math.random() * pool.length)];
     setSelectedMeal(choice);
-
-    supabase
-      .from("meals")
-      .update({ last_eaten: new Date().toISOString() })
-      .eq("id", choice.id);
   }
 
   async function addMeal() {
@@ -116,6 +110,10 @@ export default function Home() {
         Suggest meal
       </button>
 
+      <button className="link" onClick={() => setShowManager(!showManager)}>
+        Add / Edit meals
+      </button>
+
       {selectedMeal && (
         <div className="card">
           <h2>{selectedMeal.name}</h2>
@@ -125,10 +123,6 @@ export default function Home() {
           </button>
         </div>
       )}
-
-      <button className="link" onClick={() => setShowManager(!showManager)}>
-        Add / Edit meals
-      </button>
 
       {showManager && (
         <div className="card">
