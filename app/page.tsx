@@ -11,11 +11,12 @@ type Meal = {
 };
 
 const TAGS = ["Winter", "Summer", "Quick", "Healthy", "Comfort"];
-const VIBES = ["🤗 Cosy", "🥗 Fresh", "😈 Naughty"];
+const VIBES = ["🤗 Cosy", "🥗 Fresh", "🤤 Indulgent"];
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
+  const [recentMeals, setRecentMeals] = useState<Meal[]>([]);
   const [filters, setFilters] = useState<string[]>([]);
   const [vibe, setVibe] = useState<string | null>(null);
   const [showManager, setShowManager] = useState(false);
@@ -28,6 +29,12 @@ export default function Home() {
 
   useEffect(() => {
     fetchMeals();
+
+    const saved = localStorage.getItem("lastMeal");
+    const recent = localStorage.getItem("recentMeals");
+
+    if (saved) setSelectedMeal(JSON.parse(saved));
+    if (recent) setRecentMeals(JSON.parse(recent));
   }, []);
 
   async function fetchMeals() {
@@ -61,8 +68,22 @@ export default function Home() {
 
     if (!pool.length) pool = meals;
 
-    const choice = pool[Math.floor(Math.random() * pool.length)];
+    // remove recently used meals
+    const recentIds = recentMeals.map((m) => m.id);
+    const filtered = pool.filter((m) => !recentIds.includes(m.id));
+
+    const finalPool = filtered.length ? filtered : pool;
+
+    const choice =
+      finalPool[Math.floor(Math.random() * finalPool.length)];
+
     setSelectedMeal(choice);
+
+    const updatedRecent = [choice, ...recentMeals].slice(0, 5);
+    setRecentMeals(updatedRecent);
+
+    localStorage.setItem("lastMeal", JSON.stringify(choice));
+    localStorage.setItem("recentMeals", JSON.stringify(updatedRecent));
   }
 
   async function addMeal() {
@@ -82,7 +103,6 @@ export default function Home() {
     <main className="container">
       <h1>🍽️ What's for dinner?</h1>
 
-      {/* Empty state */}
       {!selectedMeal && (
         <p style={{ color: "#6b7280", marginBottom: "10px" }}>
           Pick a vibe and we’ll decide for you
@@ -116,14 +136,7 @@ export default function Home() {
       </div>
 
       {/* Buttons */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "6px",
-        }}
-      >
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
         <button className="cta" onClick={suggestMeal}>
           Suggest meal
         </button>
@@ -136,7 +149,7 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Result with animation */}
+      {/* Result */}
       {selectedMeal && (
         <div style={{ animation: "fadeIn 0.3s ease" }}>
           <div className="card">
@@ -146,7 +159,23 @@ export default function Home() {
             <button className="cta secondary" onClick={copyIngredients}>
               Copy ingredients
             </button>
+
+            <button className="cta" onClick={suggestMeal}>
+              Try again
+            </button>
           </div>
+        </div>
+      )}
+
+      {/* Recent meals */}
+      {recentMeals.length > 0 && (
+        <div className="card">
+          <h3>Recent</h3>
+          <ul style={{ paddingLeft: 16 }}>
+            {recentMeals.map((m, i) => (
+              <li key={i}>{m.name}</li>
+            ))}
+          </ul>
         </div>
       )}
 
