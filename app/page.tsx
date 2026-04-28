@@ -82,6 +82,7 @@ export default function Home() {
     <main className="container">
       <h1>🍽️ What should we eat?</h1>
 
+      {/* Vibes */}
       <div className="row">
         {VIBES.map((v) => (
           <button
@@ -94,6 +95,7 @@ export default function Home() {
         ))}
       </div>
 
+      {/* Tags */}
       <div className="row">
         {TAGS.map((tag) => (
           <button
@@ -106,26 +108,31 @@ export default function Home() {
         ))}
       </div>
 
+      {/* Main CTA */}
       <button className="cta" onClick={suggestMeal}>
         Suggest meal
       </button>
 
- <div style={{ textAlign: "center" }}>
-  <button className="link" onClick={() => setShowManager(!showManager)}>
-    Add / Edit meals
-  </button>
-</div>
+      {/* Secondary CTA */}
+      <button
+        className="cta secondary"
+        onClick={() => setShowManager(!showManager)}
+      >
+        Add / Edit meals
+      </button>
 
+      {/* Result */}
       {selectedMeal && (
         <div className="card">
           <h2>{selectedMeal.name}</h2>
           <p>{selectedMeal.ingredients}</p>
-          <button className="link" onClick={copyIngredients}>
+          <button className="cta secondary" onClick={copyIngredients}>
             Copy ingredients
           </button>
         </div>
       )}
 
+      {/* Form */}
       {showManager && (
         <div className="card">
           <input
@@ -135,6 +142,7 @@ export default function Home() {
               setNewMeal({ ...newMeal, name: e.target.value })
             }
           />
+
           <textarea
             placeholder="Ingredients"
             value={newMeal.ingredients}
@@ -160,7 +168,7 @@ export default function Home() {
             ))}
           </div>
 
-          <button className="cta small" onClick={addMeal}>
+          <button className="cta secondary" onClick={addMeal}>
             Add meal
           </button>
         </div>

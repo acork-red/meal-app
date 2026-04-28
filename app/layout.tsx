@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "What's for dinner?",
-  description: "Meal picker app",
+  description: "Meal picker",
   icons: {
     icon: "/favicon.ico",
   },
