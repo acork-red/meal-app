@@ -11,215 +11,150 @@ type Meal = {
 };
 
 const TAGS = ["Winter", "Summer", "Quick", "Healthy", "Comfort"];
-const VIBES = ["🤗 Cosy", "🥗 Fresh", "🤤 Indulgent"];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function Home() {
   const [meals, setMeals] = useState<Meal[]>([]);
-  const [selectedMeal, setSelectedMeal] = useState<Meal | null>(null);
-  const [recentMeals, setRecentMeals] = useState<Meal[]>([]);
-  const [filters, setFilters] = useState<string[]>([]);
-  const [vibe, setVibe] = useState<string | null>(null);
-  const [showManager, setShowManager] = useState(false);
-
-  const [newMeal, setNewMeal] = useState<Meal>({
-    name: "",
-    ingredients: "",
-    tags: [],
-  });
+  const [current, setCurrent] = useState<Meal | null>(null);
+  const [next, setNext] = useState<Meal | null>(null);
+  const [weekPlan, setWeekPlan] = useState<Record<string, Meal | null>>({});
+  const [ingredients, setIngredients] = useState("");
+  const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMeals();
-
-    const saved = localStorage.getItem("lastMeal");
-    const recent = localStorage.getItem("recentMeals");
-
-    if (saved) setSelectedMeal(JSON.parse(saved));
-    if (recent) setRecentMeals(JSON.parse(recent));
+    initWeek();
   }, []);
 
   async function fetchMeals() {
     const { data } = await supabase.from("meals").select("*");
-    if (data) setMeals(data);
-  }
-
-  function toggleFilter(tag: string) {
-    setFilters((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-    );
-  }
-
-  function toggleTag(tag: string) {
-    setNewMeal((prev) => ({
-      ...prev,
-      tags: prev.tags.includes(tag)
-        ? prev.tags.filter((t) => t !== tag)
-        : [...prev.tags, tag],
-    }));
-  }
-
-  function suggestMeal() {
-    let pool = meals;
-
-    if (filters.length) {
-      pool = pool.filter((m) =>
-        filters.every((f) => m.tags?.includes(f))
-      );
+    if (data) {
+      setMeals(data);
+      pickTwo(data);
     }
-
-    if (!pool.length) pool = meals;
-
-    // remove recently used meals
-    const recentIds = recentMeals.map((m) => m.id);
-    const filtered = pool.filter((m) => !recentIds.includes(m.id));
-
-    const finalPool = filtered.length ? filtered : pool;
-
-    const choice =
-      finalPool[Math.floor(Math.random() * finalPool.length)];
-
-    setSelectedMeal(choice);
-
-    const updatedRecent = [choice, ...recentMeals].slice(0, 5);
-    setRecentMeals(updatedRecent);
-
-    localStorage.setItem("lastMeal", JSON.stringify(choice));
-    localStorage.setItem("recentMeals", JSON.stringify(updatedRecent));
   }
 
-  async function addMeal() {
-    if (!newMeal.name) return;
-
-    await supabase.from("meals").insert([newMeal]);
-    setNewMeal({ name: "", ingredients: "", tags: [] });
-    fetchMeals();
+  function initWeek() {
+    const obj: Record<string, Meal | null> = {};
+    DAYS.forEach((d) => (obj[d] = null));
+    setWeekPlan(obj);
   }
 
-  function copyIngredients() {
-    if (!selectedMeal) return;
-    navigator.clipboard.writeText(selectedMeal.ingredients);
+  function pickTwo(list: Meal[]) {
+    if (list.length < 2) return;
+    const shuffled = [...list].sort(() => 0.5 - Math.random());
+    setCurrent(shuffled[0]);
+    setNext(shuffled[1]);
+  }
+
+  function swipe(choice: "left" | "right") {
+    const picked = choice === "right" ? current : next;
+    setCurrent(picked || null);
+    pickTwo(meals);
+  }
+
+  function assignToDay(day: string) {
+    if (!current) return;
+    setWeekPlan((prev) => ({ ...prev, [day]: current }));
+  }
+
+  function generateShoppingList() {
+    const items = Object.values(weekPlan)
+      .filter(Boolean)
+      .flatMap((m) => m!.ingredients.split(","))
+      .map((i) => i.trim());
+
+    return [...new Set(items)];
+  }
+
+  async function getAISuggestion() {
+    const res = await fetch("/api/ai", {
+      method: "POST",
+      body: JSON.stringify({ ingredients }),
+    });
+    const data = await res.json();
+    setAiSuggestion(data.result);
   }
 
   return (
     <main className="container">
       <h1>🍽️ What's for dinner?</h1>
 
-      {!selectedMeal && (
-        <p style={{ color: "#6b7280", marginBottom: "10px" }}>
-          Pick a vibe and we’ll decide for you
-        </p>
-      )}
+      {/* SWIPE UI */}
+      {current && next && (
+        <div className="card">
+          <h3>Choose a meal</h3>
 
-      {/* Vibes */}
-      <div className="row">
-        {VIBES.map((v) => (
-          <button
-            key={v}
-            className={vibe === v ? "pill active" : "pill"}
-            onClick={() => setVibe(v)}
-          >
-            {v}
-          </button>
-        ))}
-      </div>
+          <div style={{ display: "flex", gap: 12 }}>
+            <div className="pill" style={{ flex: 1 }}>
+              {current.name}
+            </div>
+            <div className="pill" style={{ flex: 1 }}>
+              {next.name}
+            </div>
+          </div>
 
-      {/* Tags */}
-      <div className="row">
-        {TAGS.map((tag) => (
-          <button
-            key={tag}
-            className={filters.includes(tag) ? "pill active" : "pill"}
-            onClick={() => toggleFilter(tag)}
-          >
-            {tag}
-          </button>
-        ))}
-      </div>
-
-      {/* Buttons */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-        <button className="cta" onClick={suggestMeal}>
-          Suggest meal
-        </button>
-
-        <button
-          className="cta secondary"
-          onClick={() => setShowManager(!showManager)}
-        >
-          Add / Edit meals
-        </button>
-      </div>
-
-      {/* Result */}
-      {selectedMeal && (
-        <div style={{ animation: "fadeIn 0.3s ease" }}>
-          <div className="card">
-            <h2>{selectedMeal.name}</h2>
-            <p>{selectedMeal.ingredients}</p>
-
-            <button className="cta secondary" onClick={copyIngredients}>
-              Copy ingredients
+          <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
+            <button className="cta secondary" onClick={() => swipe("left")}>
+              ← Skip
             </button>
-
-            <button className="cta" onClick={suggestMeal}>
-              Try again
+            <button className="cta" onClick={() => swipe("right")}>
+              Pick →
             </button>
           </div>
         </div>
       )}
 
-      {/* Recent meals */}
-      {recentMeals.length > 0 && (
-        <div className="card">
-          <h3>Recent</h3>
-          <ul style={{ paddingLeft: 16 }}>
-            {recentMeals.map((m, i) => (
-              <li key={i}>{m.name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {/* WEEK PLANNER */}
+      <div className="card">
+        <h3>Plan your week</h3>
 
-      {/* Form */}
-      {showManager && (
-        <div className="card">
-          <input
-            placeholder="Meal name"
-            value={newMeal.name}
-            onChange={(e) =>
-              setNewMeal({ ...newMeal, name: e.target.value })
-            }
-          />
-
-          <textarea
-            placeholder="Ingredients"
-            value={newMeal.ingredients}
-            onChange={(e) =>
-              setNewMeal({
-                ...newMeal,
-                ingredients: e.target.value,
-              })
-            }
-          />
-
-          <div className="row">
-            {TAGS.map((tag) => (
-              <button
-                key={tag}
-                className={
-                  newMeal.tags.includes(tag) ? "pill active" : "pill"
-                }
-                onClick={() => toggleTag(tag)}
-              >
-                {tag}
-              </button>
-            ))}
+        {DAYS.map((day) => (
+          <div
+            key={day}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: 8,
+            }}
+          >
+            <span>{day}</span>
+            <button
+              className="cta secondary"
+              onClick={() => assignToDay(day)}
+            >
+              {weekPlan[day]?.name || "Assign"}
+            </button>
           </div>
+        ))}
+      </div>
 
-          <button className="cta secondary" onClick={addMeal}>
-            Add meal
-          </button>
-        </div>
-      )}
+      {/* SHOPPING LIST */}
+      <div className="card">
+        <h3>Shopping list</h3>
+        <ul>
+          {generateShoppingList().map((item, i) => (
+            <li key={i}>{item}</li>
+          ))}
+        </ul>
+      </div>
+
+      {/* AI SUGGESTION */}
+      <div className="card">
+        <h3>AI meal suggestion</h3>
+
+        <textarea
+          placeholder="Enter ingredients..."
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
+        />
+
+        <button className="cta" onClick={getAISuggestion}>
+          Generate meal
+        </button>
+
+        {aiSuggestion && <p>{aiSuggestion}</p>}
+      </div>
     </main>
   );
 }
