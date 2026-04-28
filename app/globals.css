@@ -1,155 +1,106 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(#ead3b4, #e7caa3);
   color: #1f2937;
 }
 
-/* layout */
+/* Layout */
 .container {
-  max-width: 420px;
-  margin: 0 auto;
-  padding: 72px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.card {
   text-align: center;
+  max-width: 520px;
+  width: 100%;
 }
 
-h1 {
-  font-size: 34px;
-  margin-bottom: 32px;
-  letter-spacing: -0.5px;
+/* Typography */
+.title {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-/* rows */
+.subtitle {
+  color: #6b7280;
+  font-size: 18px;
+  margin-bottom: 24px;
+}
+
+/* Rows */
 .row {
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
-/* pills */
+.wrap {
+  flex-wrap: wrap;
+}
+
+/* Pills */
 .pill {
-  padding: 10px 16px;
+  background: #e5e7eb;
+  border: none;
   border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  padding: 12px 18px;
+  font-size: 16px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill.small {
   font-size: 14px;
-  transition: all 0.15s ease;
+  padding: 10px 16px;
 }
 
 .pill:hover {
-  transform: translateY(-1px);
-  border-color: #d1d5db;
+  background: #d1d5db;
 }
 
 .pill.active {
-  background: #111827;
+  background: #fb923c;
   color: white;
-  border-color: #111827;
 }
 
-/* primary CTA */
-.cta {
+/* Buttons */
+.primary {
+  width: 100%;
   margin-top: 20px;
-  background: linear-gradient(to right, #f97316, #ea580c);
+  background: linear-gradient(135deg, #f97316, #ea580c);
   color: white;
-  padding: 16px 28px;
   border: none;
-  border-radius: 18px;
+  border-radius: 999px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.primary:hover {
+  transform: translateY(-1px);
+}
+
+.secondary {
+  width: 100%;
+  margin-top: 12px;
+  background: white;
+  color: #f97316;
+  border: 2px solid #f97316;
+  border-radius: 999px;
+  padding: 14px;
   font-size: 16px;
   cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.25);
-}
-
-.cta:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 12px 24px rgba(234, 88, 12, 0.3);
-}
-
-.cta:active {
-  transform: scale(0.98);
-}
-
-/* secondary CTA */
-.cta.secondary {
-  margin-top: 12px;
-  padding: 10px 16px;
-  font-size: 14px;
-  border-radius: 14px;
-  background: white;
-  color: #ea580c;
-  border: 1px solid #fdba74;
-  box-shadow: none;
-}
-
-.cta.secondary:hover {
-  background: #fff7ed;
-}
-
-/* card */
-.card {
-  margin-top: 28px;
-  background: white;
-  border-radius: 20px;
-  padding: 28px;
-  text-align: left;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-}
-
-/* inputs */
-input,
-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  margin-bottom: 14px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  font-size: 14px;
-  transition: all 0.15s ease;
-  background: #fafafa;
-}
-
-/* 🔥 premium feel */
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: #f97316;
-  background: white;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
-}
-
-/* textarea spacing */
-textarea {
-  margin-bottom: 18px;
-}
-
-/* form tags */
-.card .row {
-  justify-content: flex-start;
-  margin-bottom: 20px;
-}
-
-/* meal result */
-.card h2 {
-  margin-top: 0;
-  margin-bottom: 8px;
-}
-
-.card p {
-  margin-bottom: 16px;
-  color: #4b5563;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
