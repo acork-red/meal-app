@@ -104,3 +104,46 @@ body {
   font-size: 16px;
   cursor: pointer;
 }
+/* RESULT CARD */
+.result {
+  margin-top: 24px;
+  padding: 20px;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+  animation: fadeIn 0.3s ease;
+}
+
+.result h2 {
+  margin: 10px 0;
+}
+
+.emoji {
+  font-size: 40px;
+}
+
+.ingredients {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.ingredients span {
+  background: #f3f4f6;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
